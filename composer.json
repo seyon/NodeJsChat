@@ -1,5 +1,5 @@
 {
-    "name": "seyon/nodjs-chat-bundle",
+    "name": "seyon/nodejs-chat-bundle",
     "type": "symfony-bundle",
     "description": "https://github.com/seyon/NodeJsChat.git",
     "keywords": ["nodejs","Symfony", "chat"],
