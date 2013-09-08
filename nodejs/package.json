@@ -1,0 +1,9 @@
+{
+     "name": "seyon_nodejs_chat",
+     "description": "https://github.com/seyon/NodeJsChat.git",
+     "version": "0.0.1",
+     "dependencies": {
+        "express": "3.x",
+        "socket.io": "0.9.x"
+     }
+}
