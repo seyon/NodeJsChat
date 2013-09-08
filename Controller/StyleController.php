@@ -19,6 +19,7 @@ class StyleController extends Controller
         $user       = $user = $this->getUser();
         $username   = 'Anonymous';
         $userId     = 0;
+        $hash       = '';
         
         if(is_object($user)){
             $username       = $user->getUsername();

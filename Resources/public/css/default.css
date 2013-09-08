@@ -125,9 +125,9 @@ User Box
 }
 
 #chatbox_userlist .user.admin {
-    color: red;
+    color: #AA002A;
 }
 
 #chatbox_userlist .user.mod {
-    color: blue;
+    color: #0099FF;
 }

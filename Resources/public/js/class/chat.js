@@ -1,3 +1,27 @@
+// Adapted slightly from Sam Dutton
+// Set name of hidden property and visibility change event
+// since some browsers only offer vendor-prefixed support
+var hidden, state, visibilityChange; 
+if (typeof document.hidden !== "undefined") {
+	hidden = "hidden";
+	visibilityChange = "visibilitychange";
+	state = "visibilityState";
+} else if (typeof document.mozHidden !== "undefined") {
+	hidden = "mozHidden";
+	visibilityChange = "mozvisibilitychange";
+	state = "mozVisibilityState";
+} else if (typeof document.msHidden !== "undefined") {
+	hidden = "msHidden";
+	visibilityChange = "msvisibilitychange";
+	state = "msVisibilityState";
+} else if (typeof document.webkitHidden !== "undefined") {
+	hidden = "webkitHidden";
+	visibilityChange = "webkitvisibilitychange";
+	state = "webkitVisibilityState";
+}
+
+console.debug(visibilityChange);
+
 var Chat = new function() {
     
     this.myStatus   = "visible";
@@ -283,12 +307,17 @@ var Chat = new function() {
             }
         });
         
-        Wrapper.addEvent(window, 'visibilitychange', function(e) {
+        document.addEventListener(visibilityChange, function(e) {
+            if(document[hidden]){
+                e.visibilityState = 'hidden';
+            } else {
+                e.visibilityState = 'visible';
+            }
             if(that.socket && e.visibilityState){
                 that.socket.emit('changeStatus', e.visibilityState);
                 that.debugMessage('changeStatus '+e.visibilityState);
             }
-        });
+        }, false);
         
         this.debugMessage('set observers');
     };

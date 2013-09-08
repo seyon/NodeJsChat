@@ -109,7 +109,9 @@ try {
                 // echo to client they've connected
                 //socket.emit('updatechatlog', 'SERVER', 'du befindest dich nun in '+defaultRoom);
                 // echo to room 1 that a person has connected to their room
-                socket.broadcast.to(socket.room).emit('updatechatlog', 'SERVER', username + ' ist beigetreten.');
+                if(me.count === 1){
+                    socket.broadcast.to(socket.room).emit('updatechatlog', 'SERVER', username + ' is joined.');
+                }
                 socket.emit('updaterooms', rooms, defaultRoom);
                 // send the new userlist
                 io.sockets.in(socket.room).emit('updateusers', usernames[defaultRoom]);
@@ -201,10 +203,9 @@ try {
                         delete usernames[socket.room][socket.username];
                         // update list of users in chat, client-side
                         io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
+                        socket.broadcast.emit('updatechatlog', 'SERVER', socket.username + ' leaves us');
                     }
                 }
-                // echo globally that this client has left
-                socket.broadcast.emit('updatechatlog', 'SERVER', socket.username + ' verlässt uns');
                 socket.leave(socket.room);
             } catch (e){
                 //console.log(e);
