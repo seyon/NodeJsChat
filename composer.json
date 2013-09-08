@@ -1,0 +1,25 @@
+{
+    "name": "seyon/nodjs-chat-bundle",
+    "type": "symfony-bundle",
+    "description": "https://github.com/seyon/NodeJsChat.git",
+    "keywords": ["nodejs","Symfony", "chat"],
+    "homepage": "https://github.com/seyon/NodeJsChat",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Wielath",
+            "email": "info@script-brain.de",
+            "homepage": "https://github.com/seyon/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/symfony": ">=2.2",
+        "seyon/phpbb3-user-bundle": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "Seyon\\Nodejs\\ChatBundle": "" }
+    },
+    "target-dir": "Seyon/Nodejs/ChatBundle"
+}
