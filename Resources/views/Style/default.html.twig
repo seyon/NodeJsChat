@@ -1,6 +1,7 @@
 {% extends seyon_nodejs_chat.template %}
 
 {% block stylesheets %} 
+{{ parent() }}
 {% stylesheets 
     '@SeyonNodejsChatBundle/Resources/public/css/default.css' filter='?yui_css'
  %}
@@ -8,14 +9,50 @@
 {% endstylesheets %}
 {% endblock %}
 {% block javascripts %}
+{{ parent() }}
 {% javascripts 
     '@SeyonNodejsChatBundle/Resources/public/js/wrapper/mootools.js'  filter='?yui_js'
     '@SeyonNodejsChatBundle/Resources/public/js/class/chat.js'  filter='?yui_js'
  %}
  <script type="text/javascript" src="{{ asset_url }}" ></script>
 {% endjavascripts %}
+<script>
+var chatConfig = {
+    ip: '{{seyon_nodejs_chat.ip}}',
+    port: '{{seyon_nodejs_chat.port}}',
+    file: '{{seyon_nodejs_chat.file}}',
+    debug: '{{seyon_nodejs_chat.debug}}',
+    hash: '{{seyon_nodejs_chat.hash}}'
+};
+{% if is_granted('ROLE_USER') %}
+    chatConfig.username = '{{ seyon_nodejs_chat.username }}';
+{% endif %}
+Wrapper.addEvent(window, 'domready', function(){Chat.init()});
+</script>
 {% endblock %}
-  
+
+ 
+ 
+ 
+ 
 {% block seyon_nodejs_chat_content %}
 
+ <div id="chatbox">
+     
+     <div id="chatbox_userlist">
+     </div>
+     
+     <div id="chatbox_messages">
+     </div>
+     
+     <div id="chatbox_input">
+         <textarea id="chatbox_text"></textarea>
+         <button id="chatbox_send">Send Message</button>
+     </div>
+     
+    <ul id="chatbox_rooms">
+    </ul>
+     
+ </div>
+ 
 {% endblock %}

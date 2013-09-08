@@ -10,16 +10,16 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 class SeyonNodejsChatExtension extends Extension implements PrependExtensionInterface 
 {
     
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container) 
     {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/config'));
         $loader->load('chat.yml');
     }
     
     public function load(array $configs, ContainerBuilder $container)
     {
         $config = array();
-        
+
         // reverse array, 
         // the main config file is the first but we will that 
         // the config part from the main will be used

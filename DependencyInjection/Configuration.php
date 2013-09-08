@@ -16,6 +16,18 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('template') 
                     ->defaultValue('SeyonNodejsChatBundle::layout.html.twig')
                 ->end()
+                ->scalarNode('ip') 
+                    ->defaultValue('localhost')
+                ->end()
+                ->integerNode('port') 
+                    ->defaultValue('3000')
+                ->end()
+                ->scalarNode('file') 
+                    ->defaultValue('/socket.io/socket.io.js')
+                ->end()
+                ->booleanNode('debug') 
+                    ->defaultFalse()
+                ->end()
             ->end();
 
         return $treeBuilder;

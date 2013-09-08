@@ -1,2 +1,6 @@
 seyon_nodejs_chat:
     template: "SeyonNodejsChatBundle::layout.html.twig"
+    ip: __host__
+    port: 3000
+    file: /socket.io/socket.io.js
+    debug: false

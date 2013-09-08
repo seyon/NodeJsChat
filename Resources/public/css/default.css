@@ -1,0 +1,133 @@
+#chatbox {
+    color: #000;
+    width: 1000px;
+    height: 500px;
+    position: relative;
+    font-size: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+
+
+/**
+
+Message Box
+
+*/
+
+#chatbox_messages {
+    width: 700px;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    background-color: #FFF;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 440px;
+    overflow: hidden;
+}
+
+#chatbox_messages .message {
+    padding: 5px;
+    border-bottom: 1px dotted #EEE;
+}
+
+#chatbox_messages .message:last-child {
+    border-bottom: none;
+}
+
+#chatbox_messages .error {
+    color: #FF0000;
+}
+
+#chatbox_messages .notice {
+    color: #333;
+    font-style: italic;
+    color: #CCC;
+}
+
+#chatbox_messages .time {
+    float: left;
+    margin-right: 5px;
+    color: #CCC;
+}
+
+#chatbox_messages .user {
+    float: left;
+    margin-right: 5px;
+    color: #CCC;
+}
+
+#chatbox_messages .text {
+    clear: both;
+}
+
+
+/**
+
+Input Box
+
+*/
+
+#chatbox_input {
+    width: 700px;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    background-color: #FFF;
+    position: absolute;
+    top: 450px;
+    height: 50px;
+    left: 0;
+    overflow: hidden;
+}
+
+
+#chatbox_input textarea{
+    width: 700px;
+    border: none;
+    background: #FFF;
+    height: 25px;
+}
+
+#chatbox_input button{
+    width: 700px;
+    border: none;
+    background: #EEE;
+    height: 25px;
+}
+
+/**
+
+User Box
+
+*/
+
+#chatbox_userlist {
+    position: absolute;
+    left: 750px;
+    top: 0px;
+    width: 250px;
+    height: 500px;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    background-color: #FFF;
+}
+
+#chatbox_userlist img {
+    max-height: 16px;
+    max-width: 16px;
+}
+
+#chatbox_userlist .user {
+    clear: both;
+    padding: 5px;
+}
+
+#chatbox_userlist .user.admin {
+    color: red;
+}
+
+#chatbox_userlist .user.mod {
+    color: blue;
+}
