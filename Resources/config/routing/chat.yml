@@ -1,0 +1,3 @@
+_chat:
+    pattern:  /chat
+    defaults: { _controller: SeyonNodejsChatBundle:Style:default }

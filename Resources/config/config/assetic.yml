@@ -1,0 +1,8 @@
+# Assetic Configuration
+assetic:
+    filters:
+        cssrewrite: ~
+        yui_css:
+            jar: "%kernel.root_dir%/../vendor/seyon/nodejs-chat-bundle/Seyon/Nodejs/ChatBundle/Resources/bin/java/yuicompressor-2.4.8pre.jar"
+        yui_js:
+            jar: "%kernel.root_dir%/../vendor/seyon/nodejs-chat-bundle/Seyon/Nodejs/ChatBundle/Resources/bin/java/yuicompressor-2.4.8pre.jar"

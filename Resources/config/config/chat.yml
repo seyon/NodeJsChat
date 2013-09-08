@@ -1,0 +1,2 @@
+seyon_nodejs_chat:
+    template: "SeyonNodejsChatBundle::layout.html.twig"

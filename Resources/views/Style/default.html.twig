@@ -1,0 +1,21 @@
+{% extends seyon_nodejs_chat.template %}
+
+{% block stylesheets %} 
+{% stylesheets 
+    '@SeyonNodejsChatBundle/Resources/public/css/default.css' filter='?yui_css'
+ %}
+<link rel="stylesheet" href="{{ asset_url }}" />
+{% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+{% javascripts 
+    '@SeyonNodejsChatBundle/Resources/public/js/wrapper/mootools.js'  filter='?yui_js'
+    '@SeyonNodejsChatBundle/Resources/public/js/class/chat.js'  filter='?yui_js'
+ %}
+ <script type="text/javascript" src="{{ asset_url }}" ></script>
+{% endjavascripts %}
+{% endblock %}
+  
+{% block seyon_nodejs_chat_content %}
+
+{% endblock %}
