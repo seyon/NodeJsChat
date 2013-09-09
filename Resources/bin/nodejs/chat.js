@@ -21,17 +21,46 @@ io.set('transports', [                     // enable all transports (optional if
   , 'jsonp-polling'
 ]);
 
+server.listen(3000);
+
+
+
+
+
 //mysql connect for access check
 var mysql      = require('mysql');
-var connection = mysql.createConnection({
+var db_config = {
   host     : dbconfig.host,
   user     : dbconfig.username,
   password : dbconfig.password,
   database : dbconfig.database
-});
-connection.connect();
+};
 
-server.listen(3000);
+var connection;
+function handleDisconnect() {
+  connection = mysql.createConnection(db_config); // Recreate the connection, since
+                                                  // the old one cannot be reused.
+
+  connection.connect(function(err) {              // The server is either down
+    if(err) {                                     // or restarting (takes a while sometimes).
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+    }                                     // to avoid a hot loop, and to allow our node script to
+  });                                     // process asynchronous requests in the meantime.
+                                          // If you're also serving http, display a 503 error.
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      handleDisconnect();                         // lost due to either server restart, or a
+    } else {                                      // connnection idle timeout (the wait_timeout
+      throw err;                                  // server variable configures this)
+    }
+  });
+}
+
+handleDisconnect();
+
+
 
 // usernames which are currently connected to the chat
 var usernames = {};
@@ -68,7 +97,7 @@ try {
                     socket.username = username;
                     socket.uid      = uid;
                     socket.room     = defaultRoom;
-                    
+
                     if(!usernames[defaultRoom]){
                         usernames[defaultRoom] = {};
                     }
@@ -200,6 +229,26 @@ try {
     //		socket.room = newroom;
     //		socket.broadcast.to(newroom).emit('updatechatlog', 'SERVER', socket.username+' ist uns beigetreten');
     //		socket.emit('updaterooms', rooms, newroom);
+        });
+
+        socket.on('report_posts', function(){
+            var sql = 'INSERT INTO nodejs_chat_reports SET ?';
+            var messageData = JSON.stringify(roomChatlogs[socket.room]);
+            var ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address;
+            var date;
+                date = new Date();
+                date = date.getUTCFullYear() + '-' +
+                    ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+                    ('00' + date.getUTCDate()).slice(-2) + ' ' + 
+                    ('00' + date.getUTCHours()).slice(-2) + ':' + 
+                    ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
+                    ('00' + date.getUTCSeconds()).slice(-2);
+            var data = {'ip': ip, 'username': socket.username, 'date': date, 'chatlog': messageData};
+            console.log(data);
+            connection.query(sql, data, function(err, result) {
+                if (err) throw err;
+                io.sockets.in(socket.room).emit('report_success');
+            });
         });
 
         // when the user disconnects.. perform this

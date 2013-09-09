@@ -140,6 +140,11 @@ var Chat = new function() {
 
         });
 
+        // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+        this.socket.on('report_success', function() {
+            confirm(chatTranslations.report_success);
+        });
+
         this.setObserver();
 
         
@@ -332,6 +337,17 @@ var Chat = new function() {
                 }
             }
         });
+        
+        Wrapper.addEvent('report_posts', 'click', function(e) {
+            if(confirm(chatTranslations.report_question)){
+                that.socket.emit('report_posts');
+            }
+            if(e){
+                e.preventDefault();
+            }
+        });
+        
+        
         
         document.addEventListener(visibilityChange, function(e) {
             if(document[hidden]){

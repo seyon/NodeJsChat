@@ -55,7 +55,8 @@ class StyleController extends Controller
             'user_leaves' => $translator->trans('user_leaves'),
             'connection_success' => $translator->trans('connection_success'),
             'connection_wait' => $translator->trans('connection_wait'),
-            'connection_error' => $translator->trans('connection_error')
+            'connection_error' => $translator->trans('connection_error'),
+            'report_question' => $translator->trans('report_question')
         );
         
 		return array(

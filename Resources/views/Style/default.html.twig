@@ -36,6 +36,17 @@ Wrapper.addEvent(window, 'domready', function(){Chat.init()});
 
  <div id="chatbox">
      
+     <div id="chatbox_actions">
+         {% if not is_granted('ROLE_USER') %}
+             <div class="left error">
+                 {% trans %}not_logged_in{% endtrans %} <a href="{{ path('login') }}">{% trans %}go_to_login{% endtrans %}</a>
+             </div>
+         {% endif %}
+             <div class="right">
+                 <a href="#" id="report_posts">{% trans %}report_posts{% endtrans %}</a>
+             </div>
+     </div>
+     
      <div id="chatbox_userlist">
      </div>
      

@@ -3,4 +3,8 @@ user_leaves: %s is gegangen
 connection_success: Verbindung aufgebaut
 connection_wait: Verbinde ... bitte warte einen Moment
 connection_error: Konnte nicht zum Server verbinden
-  
+not_logged_in: Du bist nicht eingeloggt.
+go_to_login: Zum Login
+report_posts: Beiträge melden
+report_question: Chatnachrichten wirklich melden? Dein Benutzername, IP, Uhrzeit sowie der aktuelle Chatverlauf werden Serverseitig gespeichert.
+report_success: Die Nachrichten wurden erfolgreich gemeldet. Um eine schnelle Bearbeitung zu sichern, empfehlen wir dir den Webmaster per E-Mail zu benachrichtigen.
