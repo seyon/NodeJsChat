@@ -9,6 +9,14 @@
 }
 
 
+#chatbox .admin {
+    color: #AA002A !important;
+}
+
+#chatbox .mod {
+    color: #0099FF !important;
+}
+
 
 /**
 
@@ -26,6 +34,7 @@ Message Box
     left: 0;
     height: 440px;
     overflow: hidden;
+    overflow-y: scroll;
 }
 
 #chatbox_messages .message {
@@ -41,7 +50,8 @@ Message Box
     color: #FF0000;
 }
 
-#chatbox_messages .notice {
+#chatbox_messages .notice,
+#chatbox_messages .emote{
     color: #333;
     font-style: italic;
     color: #CCC;
@@ -122,12 +132,4 @@ User Box
 #chatbox_userlist .user {
     clear: both;
     padding: 5px;
-}
-
-#chatbox_userlist .user.admin {
-    color: #AA002A;
-}
-
-#chatbox_userlist .user.mod {
-    color: #0099FF;
 }

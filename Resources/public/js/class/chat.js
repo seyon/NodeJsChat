@@ -119,7 +119,7 @@ var Chat = new function() {
         this.socket.on('writeMessages', function (data) {
             var count = 0;
             data.each(function(messageData){
-                that.addMessageRow(messageData.message, messageData.username, messageData.date, '', true);
+                that.addMessageRow(messageData.message, messageData.username, messageData.date, '', messageData.css, true);
                 count++;
             });
             Wrapper.scrollToBottom('chatbox_messages');
@@ -128,7 +128,7 @@ var Chat = new function() {
 
         // listener, whenever the server emits 'updatechat', this updates the chat body
         this.socket.on('writeMessage', function (messageData) {
-            that.addMessageRow(messageData.message, messageData.username, messageData.date);
+            that.addMessageRow(messageData.message, messageData.username, messageData.date, '', messageData.css);
         });
 
         this.socket.on('updatechatlog', function (username, action) {
@@ -230,7 +230,7 @@ var Chat = new function() {
         this.debugMessage('clear userlist');
     };
     
-    this.addMessageRow = function(message, user, time, additionalClassName, skippScroll){
+    this.addMessageRow = function(message, user, time, additionalClassName, additionalUserClassName, skippScroll){
         
         this.debugMessage('add message row started...');
 
@@ -245,6 +245,12 @@ var Chat = new function() {
         if(!additionalClassName){
             additionalClassName = '';
         }
+        
+        if(!additionalUserClassName){
+            additionalUserClassName = '';
+        }
+        
+        message = ChatEmote.replace(message, user);
         
         var div = document.createElement('div');
         div.className = 'message';
@@ -263,7 +269,7 @@ var Chat = new function() {
         timeDiv.innerHTML = h+':'+m+' | ';
         
         var userDiv = document.createElement('div');
-        userDiv.className = 'user';
+        userDiv.className = 'user '+additionalUserClassName;
         userDiv.innerHTML = user+': ';
         
         var textDiv = document.createElement('div');

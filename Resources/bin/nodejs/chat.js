@@ -151,11 +151,20 @@ try {
                     var username = socket.username;
                     var date = new Date();
                     var time = date.getTime();
-
+                    var me = usernames[socket.room][socket.uid];
+                    var cssClass = '';
+                    
+                    if(me.admin){
+                        cssClass = 'admin';
+                    } else if(me.admin){
+                        cssClass = 'mod';
+                    }
+                    
                     var messageData = {};
                     messageData.username    = username;
                     messageData.message     = data;
                     messageData.date        = time;
+                    messageData.css         = cssClass;
 
                     io.sockets.in(socket.room).emit('writeMessage', messageData);
 
