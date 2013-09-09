@@ -158,6 +158,8 @@ var Chat = new function() {
             var trans = chatTranslations.user_leaves;
         } else if(action === 'connected'){
             var trans = chatTranslations.connection_success;
+        } else if(action === 'report_success'){
+            var trans = chatTranslations.report_success_notice;
         }
         trans = trans.replace('%s', username);
         this.addMessageRow(trans, 'Server', null, 'notice');

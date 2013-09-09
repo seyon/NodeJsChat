@@ -232,23 +232,26 @@ try {
         });
 
         socket.on('report_posts', function(){
-            var sql = 'INSERT INTO nodejs_chat_reports SET ?';
-            var messageData = JSON.stringify(roomChatlogs[socket.room]);
-            var ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address;
-            var date;
-                date = new Date();
-                date = date.getUTCFullYear() + '-' +
-                    ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-                    ('00' + date.getUTCDate()).slice(-2) + ' ' + 
-                    ('00' + date.getUTCHours()).slice(-2) + ':' + 
-                    ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
-                    ('00' + date.getUTCSeconds()).slice(-2);
-            var data = {'ip': ip, 'username': socket.username, 'date': date, 'chatlog': messageData};
-            console.log(data);
-            connection.query(sql, data, function(err, result) {
-                if (err) throw err;
-                io.sockets.in(socket.room).emit('report_success');
-            });
+            if(roomChatlogs[socket.room] && roomChatlogs[socket.room].length > 0){
+                var sql = 'INSERT INTO nodejs_chat_reports SET ?';
+                var messageData = JSON.stringify(roomChatlogs[socket.room]);
+                var ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address;
+                var date;
+                    date = new Date();
+                    date = date.getUTCFullYear() + '-' +
+                        ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+                        ('00' + date.getUTCDate()).slice(-2) + ' ' + 
+                        ('00' + date.getUTCHours()).slice(-2) + ':' + 
+                        ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
+                        ('00' + date.getUTCSeconds()).slice(-2);
+                var data = {'ip': ip, 'username': socket.username, 'date': date, 'chatlog': messageData};
+                console.log(data);
+                connection.query(sql, data, function(err, result) {
+                    if (err) throw err;
+                    socket.emit('report_success');
+                    io.sockets.in(socket.room).emit('updatechatlog', socket.username, 'report_success');
+                });
+            }
         });
 
         // when the user disconnects.. perform this
