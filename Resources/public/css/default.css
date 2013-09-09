@@ -52,9 +52,13 @@ Message Box
 
 #chatbox_messages .notice,
 #chatbox_messages .emote{
-    color: #333;
     font-style: italic;
     color: #CCC;
+}
+
+#chatbox_messages a {
+    color: #0099FF;
+    font-style: italic;
 }
 
 #chatbox_messages .time {
