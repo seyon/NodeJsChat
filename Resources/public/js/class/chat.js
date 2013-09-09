@@ -20,19 +20,19 @@ if (typeof document.hidden !== "undefined") {
 	state = "webkitVisibilityState";
 }
 
-console.debug(visibilityChange);
-
 var Chat = new function() {
     
     this.myStatus   = "visible";
     this.username   = "Anonymous";
     this.hash       = "";
+    this.uid        = "";
     this.socket     = null;
     this.enableDebug= false;
     
     this.init = function () {
          
         this.printConnectingMessage();
+        this.translations = chatTranslations;
         this.checkConfig();
         this.includeJs();
              
@@ -50,6 +50,9 @@ var Chat = new function() {
         }
         if(chatConfig.username){
             this.hash = chatConfig.hash;
+        }
+        if(chatConfig.uid){
+            this.uid = chatConfig.uid;
         }
     };
     
@@ -107,7 +110,7 @@ var Chat = new function() {
 
         // on connection to server, ask for user's name with an anonymous callback
         this.socket.on('connect', function(){
-            that.addUser(that.username, that.myStatus);
+            that.addUser();
         });
 
         this.socket.on('updateusers', function (usernames) {
@@ -122,7 +125,7 @@ var Chat = new function() {
                 count++;
             });
             if(count === 0){
-                that.addMessageRow('connection established', null, null, '', true);
+                that.addMessageRow(this.translations.connection_success, null, null, '', true);
             }
             Wrapper.scrollToBottom('chatbox_messages');
             that.debugMessage('scoll messages down');
@@ -148,12 +151,22 @@ var Chat = new function() {
         return true;
     };
     
-    this.addUser = function(username, status){ 
-        this.socket.emit('adduser', username, status, 0, this.hash);
-        this.debugMessage('add user '+username+' with status '+status);
+    this.addUser = function(){ 
+        this.socket.emit('adduser', this.username, this.myStatus, 0, this.hash, this.uid);
+        this.debugMessage('add user '+this.username+' with status '+this.myStatus);
     };
     
     this.updateUserList = function(usernames){
+        
+        usernames = ChatUtil.usort(usernames, function (a, b) {
+            if(a.admin < b.admin){
+                return 1;
+            } else if(a.mod < b.mod){
+                return 0;
+            } else {
+                return -1;
+            }
+        });
         
         this.debugMessage('update userlist started...');
         
@@ -172,7 +185,6 @@ var Chat = new function() {
                 var statusImg           = document.createElement('img');
                 div.className           = 'user';
 
-                console.debug(data);
                 if(data.mobile){
                     username    = username.replace('[mobile]', ''); 
                     image       = "Android_Robot";
@@ -269,12 +281,12 @@ var Chat = new function() {
     };
     
     this.printConnectingMessage = function () {
-        this.addMessageRow("Connecting ... please wait");
+        this.addMessageRow(this.translations.connection_wait);
         this.debugMessage('print connection message');
     };
     
     this.printConnectionError = function () {
-        this.addMessageRow("Could not connect to the chat server", null, null, 'error');
+        this.addMessageRow(this.translations.connection_error, null, null, 'error');
         this.debugMessage('print connection error message');
     };
     
@@ -284,7 +296,7 @@ var Chat = new function() {
         Wrapper.addEvent('chatbox_send', 'click', function() {
             var textarea = document.getElementById('chatbox_text');
             var message = textarea.value;
-            message = that.nl2br(message);
+            message = ChatUtil.nl2br(message);
             textarea.value = '';
             that.debugMessage('sendchat');
             that.debugMessage(that.socket);
@@ -327,27 +339,5 @@ var Chat = new function() {
             console.debug(message);
         }
     };
-    
-    this.nl2br = function  (str) {
-        // http://kevin.vanzonneveld.net
-        // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-        // +   improved by: Philip Peterson
-        // +   improved by: Onno Marsman
-        // +   improved by: Atli Þór
-        // +   bugfixed by: Onno Marsman
-        // +      input by: Brett Zamir (http://brett-zamir.me)
-        // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-        // +   improved by: Brett Zamir (http://brett-zamir.me)
-        // +   improved by: Maximusya
-        // *     example 1: nl2br('Kevin\nvan\nZonneveld');
-        // *     returns 1: 'Kevin<br />\nvan<br />\nZonneveld'
-        // *     example 2: nl2br("\nOne\nTwo\n\nThree\n", false);
-        // *     returns 2: '<br>\nOne<br>\nTwo<br>\n<br>\nThree<br>\n'
-        // *     example 3: nl2br("\nOne\nTwo\n\nThree\n", true);
-        // *     returns 3: '<br />\nOne<br />\nTwo<br />\n<br />\nThree<br />\n'
-        var breakTag = '<br ' + '/>'; // Adjust comment to avoid issue on phpjs.org display
-
-        return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-    }
 
 };

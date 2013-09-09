@@ -21,6 +21,7 @@ io.set('transports', [                     // enable all transports (optional if
   , 'jsonp-polling'
 ]);
 
+//mysql connect for access check
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
   host     : dbconfig.host,
@@ -28,16 +29,15 @@ var connection = mysql.createConnection({
   password : dbconfig.password,
   database : dbconfig.database
 });
-
 connection.connect();
 
 server.listen(3000);
 
 // usernames which are currently connected to the chat
 var usernames = {};
-var defaultRoom = 'Eingangshalle';
+var defaultRoom = 'room_1';
 // rooms which are currently available in chat
-var rooms = ['Eingangshalle','Taverne','AFK Room'];
+var rooms = ['room_1'];
 var roomChatlogs = {};
 
 try {
@@ -45,9 +45,13 @@ try {
     io.sockets.on('connection', function (socket) {
 
         // when the client emits 'adduser', this listens and executes
-        socket.on('adduser', function(username, visibility, mobile, hash){
+        socket.on('adduser', function(username, visibility, mobile, hash, uid){
 
             try {
+                
+                if(typeof uid === "undefined" || uid === ""){
+                    var uid = Math.random().toString(36).substr(2,9);
+                }
                 
                 if(typeof visibility === "undefined" || !visibility){
                     var visibility = 'visible';
@@ -61,64 +65,61 @@ try {
 
                 if(username && username !== "" && typeof username !== "undefined"){
                     
-                    // store the username in the socket session for this client
                     socket.username = username;
-                    // store the room name in the socket session for this client
-                    socket.room = defaultRoom;
-                    // add the client's username to the global list
+                    socket.uid      = uid;
+                    socket.room     = defaultRoom;
+                    
                     if(!usernames[defaultRoom]){
                         usernames[defaultRoom] = {};
                     }
                     
-                    var me = usernames[defaultRoom][username];
+                    var me = usernames[defaultRoom][uid];
                     
                     if(!me){
-                        me = {'username': username, 'status': visibility, 'mobile': mobile, 'count': 1, 'admin': 0, 'mod': 0, 'hash': hash}; 
-                        console.log(me);
-                        if(typeof hash !== "undefined" && hash){
+                        me = {'username': username, 'status': visibility, 'mobile': mobile, 'count': 1, 'admin': 0, 'mod': 0, 'hash': hash, 'uid': uid}; 
+                        if(typeof hash !== "undefined" && hash !== ""){
                             var sql = 'SELECT * FROM nodejs_chat_session WHERE `hash` = "'+hash+'"';
-                            console.log(sql);
                             connection.query(sql, function(err, rows, fields) {
                                 if (err) throw err;
-                                console.log(rows);
                                 if(rows && rows.length > 0){
-                                    console.log(rows[0]);
                                     me.admin = rows[0].isAdmin;
                                     me.mod = rows[0].isMod;
-                                    console.log(me);
-                                    adduser(me, username);
+                                    adduser(me, defaultRoom);
                                 }
                             });
+                        } else {
+                            adduser(me, defaultRoom);
                         }
                     } else {
                         me.count++;
-                        adduser(me, username);
+                        adduser(me, defaultRoom);
                     }
+                    console.log(me);
                     
                 }
             } catch (e){
-                //console.log(e);
+                console.log(e);
             }
 
-            function adduser(me, username){
+            function adduser(me, room){
                 
-                usernames[defaultRoom][username] =  me;
-
-                // send client to room 1
-                socket.join(defaultRoom);
-                // echo to client they've connected
-                //socket.emit('updatechatlog', 'SERVER', 'du befindest dich nun in '+defaultRoom);
-                // echo to room 1 that a person has connected to their room
+                usernames[room][me.uid] =  me;
+                
                 if(me.count === 1){
-                    socket.broadcast.to(socket.room).emit('updatechatlog', 'SERVER', username + ' is joined.');
+
+                    // send client to room 1
+                    socket.join(room);
+                    
+                    // echo to room 1 that a person has connected to their room
+                    socket.broadcast.to(room).emit('updatechatlog', 'SERVER', me.username + ' is joined.');
+                    
+                    // send the new userlist
+                    io.sockets.in(room).emit('updateusers', usernames[room]);
+                    // send last Chatlog
+                    if(roomChatlogs[room] && roomChatlogs[room].length > 0){
+                        socket.emit('writeMessages', roomChatlogs[room]);
+                    } 
                 }
-                socket.emit('updaterooms', rooms, defaultRoom);
-                // send the new userlist
-                io.sockets.in(socket.room).emit('updateusers', usernames[defaultRoom]);
-                if(roomChatlogs[socket.room] && roomChatlogs[socket.room].length > 0){
-                    socket.emit('writeMessages', roomChatlogs[socket.room]);
-                } 
-                 
             }
 
         });
@@ -129,15 +130,15 @@ try {
                 if(
                     usernames && 
                     usernames[socket.room] && 
-                    usernames[socket.room][socket.username]
+                    usernames[socket.room][socket.uid]
                 ){
-                    var me = usernames[socket.room][socket.username];
+                    var me = usernames[socket.room][socket.uid];
                     me.status = status;
-                    usernames[socket.room][socket.username] = me;
+                    usernames[socket.room][socket.uid] = me;
                     io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
                 }
             } catch (e){
-                //console.log(e);
+                console.log(e);
             }
         }),   
 
@@ -171,7 +172,7 @@ try {
                     roomChatlogs[socket.room][length] = messageData;
                 }
             } catch (e){
-                //console.log(e);
+                console.log(e);
             }
         });
 
@@ -196,11 +197,11 @@ try {
         socket.on('disconnect', function(){
             try {
                 if(socket && socket.room && usernames && usernames[socket.room]){
-                    var me = usernames[socket.room][socket.username];
+                    var me = usernames[socket.room][socket.uid];
                     me.count--;
                     if(me.count <= 0){
                         // remove the username from global usernames list
-                        delete usernames[socket.room][socket.username];
+                        delete usernames[socket.room][socket.uid];
                         // update list of users in chat, client-side
                         io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
                         socket.broadcast.emit('updatechatlog', 'SERVER', socket.username + ' leaves us');
@@ -208,11 +209,11 @@ try {
                 }
                 socket.leave(socket.room);
             } catch (e){
-                //console.log(e);
+                console.log(e);
             }
         });
     });
 
 } catch (e){
-    //console.log(e);
+    console.log(e);
 }

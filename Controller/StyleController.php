@@ -20,7 +20,7 @@ class StyleController extends Controller
         $username   = 'Anonymous';
         $userId     = 0;
         $hash       = '';
-        
+        $session    = $this->getRequest()->getSession();
         if(is_object($user)){
             $username       = $user->getUsername();
             $userId         = $user->getId();
@@ -47,8 +47,17 @@ class StyleController extends Controller
         $config = $this->container->getParameter('seyon_nodejs_chat');
         $config['username'] = $username;
         $config['hash'] = $hash;
+        $config['uid'] = md5($session->getId()); // create a unique id
+        
+        $translator     = $this->get('translator');
+        $translations = array(
+            'user_joined' => $translator->trans('user.joined'),
+            'user_leaves' => $translator->trans('user.leaves')
+        );
+        
 		return array(
-			'seyon_nodejs_chat' => $config
+            'seyon_nodejs_chat_trans' => json_encode($translations),
+			'seyon_nodejs_chat_config' => json_encode($config)
 		);
     }
 }

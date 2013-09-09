@@ -12,18 +12,14 @@
 {{ parent() }}
 {% javascripts 
     '@SeyonNodejsChatBundle/Resources/public/js/wrapper/mootools.js'  filter='?yui_js'
+    '@SeyonNodejsChatBundle/Resources/public/js/class/util.js'  filter='?yui_js'
     '@SeyonNodejsChatBundle/Resources/public/js/class/chat.js'  filter='?yui_js'
  %}
  <script type="text/javascript" src="{{ asset_url }}" ></script>
 {% endjavascripts %}
 <script>
-var chatConfig = {
-    ip: '{{seyon_nodejs_chat.ip}}',
-    port: '{{seyon_nodejs_chat.port}}',
-    file: '{{seyon_nodejs_chat.file}}',
-    debug: '{{seyon_nodejs_chat.debug}}',
-    hash: '{{seyon_nodejs_chat.hash}}'
-};
+var chatConfig = {{seyon_nodejs_chat_trans}};
+var chatTranslations = {{seyon_nodejs_chat_trans}};
 {% if is_granted('ROLE_USER') %}
     chatConfig.username = '{{ seyon_nodejs_chat.username }}';
 {% endif %}

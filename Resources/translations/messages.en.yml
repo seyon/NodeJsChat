@@ -1,0 +1,5 @@
+user_joined: %s ist joined
+user_leaves: %s leaves us
+connection_success: connection established
+connection_wait: Connecting ... please wait
+connection_error: Could not connect to the chat server

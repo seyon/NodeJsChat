@@ -1,0 +1,6 @@
+user_joined: %s ist beigetreten
+user_leaves: %s is gegangen
+connection_success: Verbindung aufgebaut
+connection_wait: Verbinde ... bitte warte einen Moment
+connection_error: Konnte nicht zum Server verbinden
+  
