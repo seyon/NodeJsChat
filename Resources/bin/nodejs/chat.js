@@ -111,7 +111,7 @@ try {
                     socket.join(room);
                     
                     // echo to room 1 that a person has connected to their room
-                    socket.broadcast.to(room).emit('updatechatlog', 'SERVER', me.username + ' is joined.');
+                    socket.broadcast.to(room).emit('updatechatlog', me.username, 'joined');
                     
                     // send the new userlist
                     io.sockets.in(room).emit('updateusers', usernames[room]);
@@ -203,8 +203,8 @@ try {
                         // remove the username from global usernames list
                         delete usernames[socket.room][socket.uid];
                         // update list of users in chat, client-side
+                        socket.broadcast.to(socket.room).emit('updatechatlog', socket.username, 'leaves');
                         io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
-                        socket.broadcast.emit('updatechatlog', 'SERVER', socket.username + ' leaves us');
                     }
                 }
                 socket.leave(socket.room);

@@ -1,4 +1,4 @@
-{% extends seyon_nodejs_chat.template %}
+{% extends seyon_nodejs_chat_template %}
 
 {% block stylesheets %} 
 {{ parent() }}
@@ -18,10 +18,10 @@
  <script type="text/javascript" src="{{ asset_url }}" ></script>
 {% endjavascripts %}
 <script>
-var chatConfig = {{seyon_nodejs_chat_trans}};
-var chatTranslations = {{seyon_nodejs_chat_trans}};
+var chatConfig = {{seyon_nodejs_chat_config|raw}};
+var chatTranslations = {{seyon_nodejs_chat_trans|raw}};
 {% if is_granted('ROLE_USER') %}
-    chatConfig.username = '{{ seyon_nodejs_chat.username }}';
+    chatConfig.username = '{{ seyon_nodejs_chat_username }}';
 {% endif %}
 Wrapper.addEvent(window, 'domready', function(){Chat.init()});
 </script>

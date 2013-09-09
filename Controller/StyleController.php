@@ -49,15 +49,20 @@ class StyleController extends Controller
         $config['hash'] = $hash;
         $config['uid'] = md5($session->getId()); // create a unique id
         
-        $translator     = $this->get('translator');
+        $translator     = $this->get('translator.default');
         $translations = array(
-            'user_joined' => $translator->trans('user.joined'),
-            'user_leaves' => $translator->trans('user.leaves')
+            'user_joined' => $translator->trans('user_joined'),
+            'user_leaves' => $translator->trans('user_leaves'),
+            'connection_success' => $translator->trans('connection_success'),
+            'connection_wait' => $translator->trans('connection_wait'),
+            'connection_error' => $translator->trans('connection_error')
         );
         
 		return array(
             'seyon_nodejs_chat_trans' => json_encode($translations),
-			'seyon_nodejs_chat_config' => json_encode($config)
+			'seyon_nodejs_chat_config' => json_encode($config),
+            'seyon_nodejs_chat_username' => $username,
+            'seyon_nodejs_chat_template' => $config['template']
 		);
     }
 }

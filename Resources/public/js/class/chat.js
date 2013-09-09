@@ -30,9 +30,7 @@ var Chat = new function() {
     this.enableDebug= false;
     
     this.init = function () {
-         
         this.printConnectingMessage();
-        this.translations = chatTranslations;
         this.checkConfig();
         this.includeJs();
              
@@ -124,9 +122,6 @@ var Chat = new function() {
                 that.addMessageRow(messageData.message, messageData.username, messageData.date, '', true);
                 count++;
             });
-            if(count === 0){
-                that.addMessageRow(this.translations.connection_success, null, null, '', true);
-            }
             Wrapper.scrollToBottom('chatbox_messages');
             that.debugMessage('scoll messages down');
         });
@@ -136,8 +131,8 @@ var Chat = new function() {
             that.addMessageRow(messageData.message, messageData.username, messageData.date);
         });
 
-        this.socket.on('updatechatlog', function (username, data) {
-            that.addMessageRow(data, username, null, 'notice');
+        this.socket.on('updatechatlog', function (username, action) {
+            that.addTranslatedRow(username, action);
         });
 
         // listener, whenever the server emits 'updaterooms', this updates the room the client is in
@@ -151,8 +146,21 @@ var Chat = new function() {
         return true;
     };
     
+    this.addTranslatedRow = function(username, action){
+        if(action === 'joined'){
+            var trans = chatTranslations.user_joined;
+        } else if(action === 'leaves'){
+            var trans = chatTranslations.user_leaves;
+        } else if(action === 'connected'){
+            var trans = chatTranslations.connection_success;
+        }
+        trans = trans.replace('%s', username);
+        this.addMessageRow(trans, 'Server', null, 'notice');
+    };
+    
     this.addUser = function(){ 
         this.socket.emit('adduser', this.username, this.myStatus, 0, this.hash, this.uid);
+        this.addTranslatedRow(this.username, 'connected');
         this.debugMessage('add user '+this.username+' with status '+this.myStatus);
     };
     
@@ -281,12 +289,12 @@ var Chat = new function() {
     };
     
     this.printConnectingMessage = function () {
-        this.addMessageRow(this.translations.connection_wait);
+        this.addMessageRow(chatTranslations.connection_wait);
         this.debugMessage('print connection message');
     };
     
     this.printConnectionError = function () {
-        this.addMessageRow(this.translations.connection_error, null, null, 'error');
+        this.addMessageRow(chatTranslations.connection_error, null, null, 'error');
         this.debugMessage('print connection error message');
     };
     
