@@ -1,5 +1,5 @@
 
-var ChatEmote = new function() {
+var ChatReplacer = new function() {
   
   
     this.replace = function(text, username){        

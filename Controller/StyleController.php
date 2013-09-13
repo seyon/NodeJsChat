@@ -21,6 +21,8 @@ class StyleController extends Controller
         $userId     = 0;
         $hash       = '';
         $session    = $this->getRequest()->getSession();
+        $config = $this->container->getParameter('seyon_nodejs_chat');
+        
         if(is_object($user)){
             $username       = $user->getUsername();
             $userId         = $user->getId();
@@ -33,10 +35,10 @@ class StyleController extends Controller
                 $userSession->setUserId($userId);
                 $userSession->setHash($hash);
             }
-            if (true === $this->get('security.context')->isGranted('ROLE_ADMIN')) {
+            if (true === $this->get('security.context')->isGranted($config['roles']['admin'])) {
                 $userSession->setIsAdmin(true);
             }
-            if (true === $this->get('security.context')->isGranted('ROLE_MODERATOR')) {
+            if (true === $this->get('security.context')->isGranted($config['roles']['moderator'])) {
                 $userSession->setIsMod(true);
             }
             $em = $this->getDoctrine()->getManager();
@@ -44,10 +46,9 @@ class StyleController extends Controller
             $em->flush();
         }
         
-        $config = $this->container->getParameter('seyon_nodejs_chat');
-        $config['username'] = $username;
-        $config['hash'] = $hash;
-        $config['uid'] = md5($session->getId()); // create a unique id
+        $config['username']     = $username;
+        $config['hash']         = $hash;
+        $config['uid']          = md5($session->getId()); // create a unique id
         
         $translator     = $this->get('translator.default');
         $translations = array(
@@ -58,7 +59,15 @@ class StyleController extends Controller
             'connection_error' => $translator->trans('connection_error'),
             'report_question' => $translator->trans('report_question'),
             'report_success' => $translator->trans('report_success'),
-            'report_success_notice' => $translator->trans('report_success_notice')
+            'report_success_notice' => $translator->trans('report_success_notice'),
+            'userlist_label_admin' => $translator->trans('userlist_label_admin'),
+            'userlist_label_mod' => $translator->trans('userlist_label_mod'),
+            'userlist_label_default' => $translator->trans('userlist_label_default'),
+            'force_reload' => $translator->trans('force_reload'),
+            'contextmenu_wisper' => $translator->trans('contextmenu_wisper'),
+            'contextmenu_mute' => $translator->trans('contextmenu_mute'),
+            'contextmenu_kick' => $translator->trans('contextmenu_kick'),
+            'contextmenu_ban' => $translator->trans('contextmenu_ban')
         );
         
 		return array(

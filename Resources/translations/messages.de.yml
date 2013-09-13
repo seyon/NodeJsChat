@@ -8,4 +8,12 @@ go_to_login: Zum Login
 report_posts: Beiträge melden
 report_question: Chatnachrichten wirklich melden? Dein Benutzername, IP, Uhrzeit sowie der aktuelle Chatverlauf werden Serverseitig gespeichert.
 report_success: Die Nachrichten wurden erfolgreich gemeldet. Um eine schnelle Bearbeitung zu sichern, empfehlen wir dir den Webmaster per E-Mail zu benachrichtigen.
-report_success_notice: %s hat den aktuellen Chatverlauf gemeldet
+report_success_notice: Der aktuelle Chatverlauf wurde gemeldet!
+userlist_label_default: Benutzer
+userlist_label_mod: Moderatoren
+userlist_label_admin: Administratoren
+force_reload: Erzwinge ein Neuladen
+contextmenu_wisper: Anflüstern
+contextmenu_mute: mute den User
+contextmenu_kick: kicke den User
+contextmenu_ban: banne den User

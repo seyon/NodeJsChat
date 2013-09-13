@@ -13,7 +13,8 @@
 {% javascripts 
     '@SeyonNodejsChatBundle/Resources/public/js/wrapper/mootools.js'  filter='?yui_js'
     '@SeyonNodejsChatBundle/Resources/public/js/class/util.js'  filter='?yui_js'
-    '@SeyonNodejsChatBundle/Resources/public/js/class/emote.js'  filter='?yui_js'
+    '@SeyonNodejsChatBundle/Resources/public/js/class/replacer.js'  filter='?yui_js'
+    '@SeyonNodejsChatBundle/Resources/public/js/class/moderator.js'  filter='?yui_js'
     '@SeyonNodejsChatBundle/Resources/public/js/class/chat.js'  filter='?yui_js'
  %}
  <script type="text/javascript" src="{{ asset_url }}" ></script>
@@ -58,8 +59,11 @@ Wrapper.addEvent(window, 'domready', function(){Chat.init()});
          <button id="chatbox_send">Send Message</button>
      </div>
      
-    <ul id="chatbox_rooms">
-    </ul>
+    <div id="chatbox_rooms">
+    </div>
+     
+    <div id="chatbox_moderator">
+    </div>
      
  </div>
  

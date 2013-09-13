@@ -28,6 +28,16 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('debug') 
                     ->defaultFalse()
                 ->end()
+                ->arrayNode('roles') 
+                    ->children()
+                        ->scalarNode('admin') 
+                            ->defaultValue('ROLE_ADMIN')
+                        ->end()
+                        ->scalarNode('moderator') 
+                            ->defaultValue('ROLE_MODERATOR')
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

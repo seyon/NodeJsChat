@@ -139,11 +139,13 @@ try {
                     // send client to room 1
                     socket.join(room);
                     
+                    socket.emit('adduser_callback', me);
+                    
                     // echo to room 1 that a person has connected to their room
                     socket.broadcast.to(room).emit('updatechatlog', me.username, 'joined');
                     
                     // send the new userlist
-                    io.sockets.in(room).emit('updateusers', usernames[room]);
+                    io.sockets.in(room).emit('updateusers', usernames[room], me);
                     // send last Chatlog
                     if(roomChatlogs[room] && roomChatlogs[room].length > 0){
                         socket.emit('writeMessages', roomChatlogs[room]);
@@ -169,7 +171,25 @@ try {
             } catch (e){
                 console.log(e);
             }
-        }),   
+        }),  
+
+        // when the client emits 'sendchat', this listens and executes
+        socket.on('force_reload', function () {
+            try {
+                if(
+                    usernames && 
+                    usernames[socket.room] && 
+                    usernames[socket.room][socket.uid]
+                ){
+                    var me = usernames[socket.room][socket.uid];
+                    if(me.admin === 1){
+                        io.sockets.emit('force_reload');
+                    }
+                }
+            } catch (e){
+                console.log(e);
+            }
+        }),  
 
         // when the client emits 'sendchat', this listens and executes
         socket.on('sendchat', function (data) {

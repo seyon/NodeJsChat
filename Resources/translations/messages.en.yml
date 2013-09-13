@@ -8,4 +8,12 @@ go_to_login: to login
 report_posts: report posts
 report_question: Report posts really? Your username, IP, time and the current chat history are stored server side.
 report_success: The messages were successfully reported. To ensure quick processing, we recommend you notify the webmaster by e-mail.
-report_success_notice: % s has reported the current chat history
+report_success_notice: The current chat history was reported 
+userlist_label_default: User
+userlist_label_mod: Moderator
+userlist_label_admin: Admin
+force_reload: force reload
+contextmenu_wisper: wisper
+contextmenu_mute: mute user
+contextmenu_kick: kick user
+contextmenu_ban: ban user

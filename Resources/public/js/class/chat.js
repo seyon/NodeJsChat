@@ -20,6 +20,10 @@ if (typeof document.hidden !== "undefined") {
 	state = "webkitVisibilityState";
 }
 
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
+}
+
 var Chat = new function() {
     
     this.myStatus   = "visible";
@@ -28,6 +32,7 @@ var Chat = new function() {
     this.uid        = "";
     this.socket     = null;
     this.enableDebug= false;
+    this.me         = {mod: 0, admin: 0};
     
     this.init = function () {
         this.printConnectingMessage();
@@ -106,46 +111,60 @@ var Chat = new function() {
 
         this.socket = io.connect(chatConfig.ip+':'+chatConfig.port);       
 
-        // on connection to server, ask for user's name with an anonymous callback
-        this.socket.on('connect', function(){
-            that.addUser();
-        });
-
-        this.socket.on('updateusers', function (usernames) {
-            that.updateUserList(usernames);
-         });
-
-        // listener, whenever the server emits 'updatechat', this updates the chat body
-        this.socket.on('writeMessages', function (data) {
-            var count = 0;
-            data.each(function(messageData){
-                that.addMessageRow(messageData.message, messageData.username, messageData.date, '', messageData.css, true);
-                count++;
+        try {
+            // on connection to server, ask for user's name with an anonymous callback
+            this.socket.on('connect', function(){
+                that.addUser();
             });
-            Wrapper.scrollToBottom('chatbox_messages');
-            that.debugMessage('scoll messages down');
-        });
 
-        // listener, whenever the server emits 'updatechat', this updates the chat body
-        this.socket.on('writeMessage', function (messageData) {
-            that.addMessageRow(messageData.message, messageData.username, messageData.date, '', messageData.css);
-        });
+            this.socket.on('updateusers', function (usernames, me) {
+                that.updateUserList(usernames, me);
+             });
 
-        this.socket.on('updatechatlog', function (username, action) {
-            that.addTranslatedRow(username, action);
-        });
+            // listener, whenever the server emits 'updatechat', this updates the chat body
+            this.socket.on('writeMessages', function (data) {
+                var count = 0;
+                data.each(function(messageData){
+                    that.addMessageRow(messageData.message, messageData.username, messageData.date, '', messageData.css, true);
+                    count++;
+                });
+                Wrapper.scrollToBottom('chatbox_messages');
+                that.debugMessage('scoll messages down');
+            });
 
-        // listener, whenever the server emits 'updaterooms', this updates the room the client is in
-        this.socket.on('updaterooms', function(rooms, current_room) {
+            // listener, whenever the server emits 'updatechat', this updates the chat body
+            this.socket.on('writeMessage', function (messageData) {
+                that.addMessageRow(messageData.message, messageData.username, messageData.date, '', messageData.css);
+            });
 
-        });
+            this.socket.on('updatechatlog', function (username, action) {
+                that.addTranslatedRow(username, action);
+            });
 
-        // listener, whenever the server emits 'updaterooms', this updates the room the client is in
-        this.socket.on('report_success', function() {
-            confirm(chatTranslations.report_success);
-        });
+            // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+            this.socket.on('updaterooms', function(rooms, current_room) {
 
-        this.setObserver();
+            });
+
+            // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+            this.socket.on('report_success', function() {
+                confirm(chatTranslations.report_success);
+            });
+
+            // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+            this.socket.on('adduser_callback', function(myData) {
+                this.me = myData;
+                if(myData.mod === 1){
+                    ChatModerator.addActions(myData, that.socket);
+                }
+            });
+
+            ChatModerator.addSocketEvents(that.socket);
+
+            this.setObserver();
+        } catch(e){
+            this.debugMessage(e);
+        }
 
         
         return true;
@@ -162,7 +181,7 @@ var Chat = new function() {
             var trans = chatTranslations.report_success_notice;
         }
         trans = trans.replace('%s', username);
-        this.addMessageRow(trans, 'Server', null, 'notice');
+        this.addNoticeMessageRow(trans, 'Server');
     };
     
     this.addUser = function(){ 
@@ -171,31 +190,43 @@ var Chat = new function() {
         this.debugMessage('add user '+this.username+' with status '+this.myStatus);
     };
     
-    this.updateUserList = function(usernames){
-        
-        usernames = ChatUtil.usort(usernames, function (a, b) {
-            if(a.admin < b.admin){
-                return 1;
-            } else if(a.mod < b.mod){
-                return 0;
-            } else {
-                return -1;
-            }
-        });
-        
-        this.debugMessage('update userlist started...');
-        
+    this.updateUserList = function(usernames, me){
+                
         if(document.getElementById('chatbox_userlist')){
 
             this.clearUserlist();
             
+            var ulAdmin    = document.createElement('ul');
+            var ulMod      = document.createElement('ul');
+            var ulDefault  = document.createElement('ul');
+            
+            var liAdminLabel    = document.createElement('li');
+            var liModLabel      = document.createElement('li');
+            var liDefaultLabel  = document.createElement('li');
+            
+            liAdminLabel.className = 'label';
+            liModLabel.className = 'label';
+            liDefaultLabel.className = 'label';
+            
+            liAdminLabel.innerHTML = chatTranslations.userlist_label_admin;
+            liModLabel.innerHTML = chatTranslations.userlist_label_mod;
+            liDefaultLabel.innerHTML = chatTranslations.userlist_label_default;
+            
+            
+            ulAdmin.appendChild(liAdminLabel);
+            ulMod.appendChild(liModLabel);
+            ulDefault.appendChild(liDefaultLabel);
+            
+            document.getElementById('chatbox_userlist').appendChild(ulAdmin);
+            document.getElementById('chatbox_userlist').appendChild(ulMod);
+            document.getElementById('chatbox_userlist').appendChild(ulDefault);
             this.debugMessage(usernames);
             for (var key in usernames) {
                 var data                = usernames[key];
                 this.debugMessage(data);
                 var username            = data.username;
                 var image               = "bullet";
-                var div                 = document.createElement('div');
+                var div                 = document.createElement('li');
                 var usernameDiv         = document.createElement('div');
                 var statusImg           = document.createElement('img');
                 div.className           = 'user';
@@ -225,7 +256,33 @@ var Chat = new function() {
                 statusImg.src = "/bundles/seyonnodejschat/images/icons/"+image;
                 div.appendChild(statusImg);
                 div.appendChild(usernameDiv);
-                document.getElementById('chatbox_userlist').appendChild(div);
+                
+                Wrapper.addEvent(div, 'click', function(e){
+                    if(!document.getElementById('chatbox_contextmenu')){
+                        var context = document.createElement('ul');
+                        context.id = 'chatbox_contextmenu';
+                        context.className = 'contextmenu';
+                        var li = document.createElement('li');
+                        li.innerHTML = chatTranslations.contextmenu_wisper;
+                        li.className = 'inactive';
+                        context.appendChild(li);
+                        ChatModerator.addContextItems(me, context, this.socket);
+                        div.appendChild(context);
+                        if(e){
+                            e.preventDefault();
+                        }
+                    } else {
+                        document.getElementById('chatbox_contextmenu').remove();
+                    }
+                });
+                
+                if(data.admin === 1){
+                    ulAdmin.appendChild(div);
+                } else if(data.mod === 1){
+                    ulMod.appendChild(div);
+                } else {
+                    ulDefault.appendChild(div);
+                }
             }
          }
          
@@ -253,11 +310,15 @@ var Chat = new function() {
             additionalClassName = '';
         }
         
+        if(additionalClassName === 'error' || additionalClassName === 'notice'){
+            additionalClassName = additionalClassName + ' nobreak';
+        }
+        
         if(!additionalUserClassName){
             additionalUserClassName = '';
         }
         
-        message = ChatEmote.replace(message, user);
+        message = ChatReplacer.replace(message, user);
         
         var div = document.createElement('div');
         div.className = 'message';
@@ -296,19 +357,25 @@ var Chat = new function() {
         this.debugMessage('add message row finished');
     };
     
+    this.addNoticeMessageRow = function(message, username, time){
+        this.addMessageRow(message, username, time, 'notice');
+    };
+    
+    this.addErrorMessageRow = function(message, username, time){
+        this.addMessageRow(message, username, time, 'error');
+    };
+    
     this.clearMessages = function(){
         document.getElementById('chatbox_messages').innerHTML = '';
         this.debugMessage('clear messages');
     };
     
     this.printConnectingMessage = function () {
-        this.addMessageRow(chatTranslations.connection_wait);
-        this.debugMessage('print connection message');
+        this.addNoticeMessageRow(chatTranslations.connection_wait);
     };
     
     this.printConnectionError = function () {
-        this.addMessageRow(chatTranslations.connection_error, null, null, 'error');
-        this.debugMessage('print connection error message');
+        this.addErrorMessageRow(chatTranslations.connection_error);
     };
     
     this.setObserver = function(){
@@ -367,8 +434,12 @@ var Chat = new function() {
     };
     
     this.debugMessage = function(message){
-        if(this.enableDebug){
-            console.debug(message);
+        try {
+            if(this.enableDebug){
+                console.debug(message);
+            }
+        } catch(e){
+            //console.debug(e);
         }
     };
 

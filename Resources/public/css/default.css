@@ -81,7 +81,7 @@ Message Box
 #chatbox_messages .notice,
 #chatbox_messages .emote{
     font-style: italic;
-    color: #CCC;
+    color: #999;
 }
 
 #chatbox_messages a {
@@ -92,13 +92,13 @@ Message Box
 #chatbox_messages .time {
     float: left;
     margin-right: 5px;
-    color: #CCC;
+    color: #999;
 }
 
 #chatbox_messages .user {
     float: left;
     margin-right: 5px;
-    color: #CCC;
+    color: #000;
 }
 
 #chatbox_messages .text {
@@ -156,6 +156,11 @@ User Box
     background-color: #FFF;
 }
 
+#chatbox_userlist ul {
+    list-style: none;
+    padding-left: 10px;
+}
+
 #chatbox_userlist img {
     max-height: 16px;
     max-width: 16px;
@@ -164,4 +169,34 @@ User Box
 #chatbox_userlist .user {
     clear: both;
     padding: 5px;
+    cursor: pointer;
+}
+
+#chatbox .nobreak {
+    clear: none;
+}
+
+
+
+#chatbox .contextmenu {
+
+    background-color: #EEE;
+    border: 1px solid #CCC;
+    padding: 0px;
+    list-style: none;
+    margin: 0px;
+    margin-top: 5px;
+}
+
+#chatbox .contextmenu li {
+    padding: 5px;
+}
+
+#chatbox .contextmenu li:hover {
+    background-color: #CCC;
+}
+
+#chatbox .contextmenu .inactive {
+    font-style: italic;
+    color: #999;
 }

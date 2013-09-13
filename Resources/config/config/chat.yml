@@ -4,3 +4,6 @@ seyon_nodejs_chat:
     port: 3000
     file: /socket.io/socket.io.js
     debug: false
+    roles:
+      admin: ROLE_ADMIN
+      moderator: ROLE_MODERATOR
