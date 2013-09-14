@@ -17,3 +17,6 @@ contextmenu_wisper: Anflüstern
 contextmenu_mute: mute den User
 contextmenu_kick: kicke den User
 contextmenu_ban: banne den User
+kicked: Du wurdest gekicket!
+muted: Du bist stum geschalten!
+was_kicked: %s wurde gekicked

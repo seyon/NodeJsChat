@@ -48,30 +48,39 @@ class StyleController extends Controller
         
         $config['username']     = $username;
         $config['hash']         = $hash;
-        $config['uid']          = md5($session->getId()); // create a unique id
         
         $translator     = $this->get('translator.default');
+        
         $translations = array(
-            'user_joined' => $translator->trans('user_joined'),
-            'user_leaves' => $translator->trans('user_leaves'),
-            'connection_success' => $translator->trans('connection_success'),
-            'connection_wait' => $translator->trans('connection_wait'),
-            'connection_error' => $translator->trans('connection_error'),
-            'report_question' => $translator->trans('report_question'),
-            'report_success' => $translator->trans('report_success'),
-            'report_success_notice' => $translator->trans('report_success_notice'),
-            'userlist_label_admin' => $translator->trans('userlist_label_admin'),
-            'userlist_label_mod' => $translator->trans('userlist_label_mod'),
-            'userlist_label_default' => $translator->trans('userlist_label_default'),
-            'force_reload' => $translator->trans('force_reload'),
-            'contextmenu_wisper' => $translator->trans('contextmenu_wisper'),
-            'contextmenu_mute' => $translator->trans('contextmenu_mute'),
-            'contextmenu_kick' => $translator->trans('contextmenu_kick'),
-            'contextmenu_ban' => $translator->trans('contextmenu_ban')
+            'user_joined',
+            'user_leaves',
+            'connection_success',
+            'connection_wait',
+            'connection_error',
+            'report_question',
+            'report_success',
+            'report_success_notice',
+            'userlist_label_admin',
+            'userlist_label_mod',
+            'userlist_label_default',
+            'force_reload',
+            'contextmenu_wisper',
+            'contextmenu_mute',
+            'contextmenu_kick',
+            'contextmenu_ban',
+            'kicked',
+            'muted',
+            'was_kicked'
         );
         
+        $translationArray = array();
+        
+        foreach($translations as $key){
+            $translationArray[$key] = $translator->trans($key);
+        }
+        
 		return array(
-            'seyon_nodejs_chat_trans' => json_encode($translations),
+            'seyon_nodejs_chat_trans' => json_encode($translationArray),
 			'seyon_nodejs_chat_config' => json_encode($config),
             'seyon_nodejs_chat_username' => $username,
             'seyon_nodejs_chat_template' => $config['template']

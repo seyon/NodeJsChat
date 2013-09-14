@@ -17,3 +17,6 @@ contextmenu_wisper: wisper
 contextmenu_mute: mute user
 contextmenu_kick: kick user
 contextmenu_ban: ban user
+kicked: you are kicked
+muted: you are muted
+was_kicked: %s was kicked

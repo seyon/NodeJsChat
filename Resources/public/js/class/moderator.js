@@ -1,9 +1,17 @@
 var ChatModerator = new function() {
     
     this.addActions = function(me, socket){
+        
+        var div = document.getElementById('chatbox_mod_actions');
+        if(div){
+            div.remove();
+        }
+        
         var divActions = document.getElementById('chatbox_actions');
         var div = document.createElement('div');
         div.className = 'left mod_actions';
+        div.id = 'chatbox_mod_actions';
+        
         if(me.admin === 1){
             var action1 = document.createElement('a');
             action1.innerHTML = chatTranslations.force_reload;
@@ -16,15 +24,19 @@ var ChatModerator = new function() {
         divActions.appendChild(div);
     };
     
-this.addContextItems = function(me, contextElement, socket){
+    this.addContextItems = function(me, contextElement, socket, uid){
         if(me && me.mod === 1){
             var li = document.createElement('li');
             li.innerHTML = chatTranslations.contextmenu_mute;
-            li.className = 'inactive';
+            Wrapper.addEvent(li, 'click', function(e){
+                socket.emit('mute_user', uid);
+            });
             contextElement.appendChild(li);
             var li = document.createElement('li');
             li.innerHTML = chatTranslations.contextmenu_kick;
-            li.className = 'inactive';
+            Wrapper.addEvent(li, 'click', function(e){
+                socket.emit('kick_user', uid);
+            });
             contextElement.appendChild(li);
             var li = document.createElement('li');
             li.innerHTML = chatTranslations.contextmenu_ban;
@@ -52,6 +64,11 @@ this.addContextItems = function(me, contextElement, socket){
         
         socket.on('force_reload', function() {
             location.reload();
+        });
+        
+        socket.on('kick_callback', function() {
+            socket.disconnect();
+            Chat.addErrorMessageRow(chatTranslations.kicked);
         });
         
     };
