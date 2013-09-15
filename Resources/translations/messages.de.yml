@@ -18,7 +18,7 @@ contextmenu_mute: mute den User
 contextmenu_kick: kicke den User
 contextmenu_ban: banne den User
 kicked: Du wurdest gekicket!
-muted: Du bist stum geschalten!
+muted: Du bist stumm geschalten!
 was_kicked: %s wurde gekicked
 report_subject_label: Bitte gib einen Grund ein.
 report_send_button: Meldung abschicken

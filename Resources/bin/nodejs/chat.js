@@ -12,7 +12,7 @@ var app = express()
 io.enable('browser client minification');  // send minified client
 io.enable('browser client etag');          // apply etag caching logic based on version number
 io.enable('browser client gzip');          // gzip the file
-io.set('log level', 1);                    // reduce logging
+io.set('log level', 4);                    // reduce logging
 io.set('transports', [                     // enable all transports (optional if you want flashsocket)
     'websocket'
   , 'flashsocket'
@@ -112,8 +112,12 @@ try {
                             adduser(me, defaultRoom);
                         }
                     } else {
-                        me.count++;
-                        adduser(me, defaultRoom);
+                        if(me){
+                            if(me.count){
+                                me.count++;
+                            }
+                            adduser(me, defaultRoom);
+                        }
                     }
                     console.log(me);
                     
@@ -126,7 +130,7 @@ try {
                 
                 usernames[room][me.id] =  me;
                 
-                if(me.count === 1){
+                if(me && me.count && me.count === 1){
 
                     // send client to room 1
                     socket.join(room);
@@ -299,17 +303,13 @@ try {
         socket.on('disconnect', function(){
             try {
                 if(socket && socket.room && usernames && usernames[socket.room]){
-                    var me = usernames[socket.room][socket.id];
-                    me.count--;
-                    if(me.count <= 0){
-                        // remove the username from global usernames list
-                        delete usernames[socket.room][socket.id];
-                        // update list of users in chat, client-side
-                        if(!socket.kicked || socket.kicked !== 1){
-                            socket.broadcast.to(socket.room).emit('updatechatlog', socket.username, 'leaves');
-                        }
-                        io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
+                    // remove the username from global usernames list
+                    delete usernames[socket.room][socket.id];
+                    // update list of users in chat, client-side
+                    if(!socket.kicked || socket.kicked !== 1){
+                        socket.broadcast.to(socket.room).emit('updatechatlog', socket.username, 'leaves');
                     }
+                    io.sockets.in(socket.room).emit('updateusers', usernames[socket.room]);
                 }
                 socket.leave(socket.room);
             } catch (e){

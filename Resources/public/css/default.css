@@ -147,7 +147,8 @@ User Box
     height: 490px;
     border: 1px solid #CCC;
     border-radius: 3px;
-    background-color: #FFF;
+    background-color: #FFF;    
+    overflow: auto;
 }
 
 #chatbox_userlist ul {
