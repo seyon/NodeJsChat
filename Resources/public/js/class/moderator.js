@@ -22,6 +22,10 @@ var ChatModerator = new function() {
             div.appendChild(action1);
         }
         divActions.appendChild(div);
+        
+        if(me.mod === 1){
+            socket.emit('get_reports');
+        }
     };
     
     this.addContextItems = function(me, contextElement, socket, uid){
@@ -45,22 +49,57 @@ var ChatModerator = new function() {
         }
     };
     
+    this.createReportRow = function(report, container){
+        var divReport   = document.createElement('div');
+        divReport.className = 'log_row';
+        divReport.innerHTML = report.username+': '+report.message;
+        container.appendChild(divReport);
+    };
+    
     this.displayReports = function(reports){
         
         var containter = document.getElementById('chatbox_moderator');
+        var containterLogs = document.getElementById('chatbox_moderator_logs');
         
-        if(containter){
-            var divReport = document.createElement('div');
-            
+        if(containter && containterLogs){
+            containter.style.display = 'block';
+            containterLogs.innerHTML = '';
+            for(var i = 0; i < reports.length; i++){
+                var report = reports[i];
+                var divReport   = document.createElement('div');
+                var divHeader   = document.createElement('div');
+                var date        = new Date(report.date);
+                divHeader.innerHTML = ChatUtil.createDateString(date)+' '+ChatUtil.createTimeString(date)+' '+report.username+': '+report.subject;
+                divHeader.className = 'report_header'
+                var divBody     = document.createElement('div');
+                var logs        = JSON.parse(report.chatlog);
+                for(var ii = 0; ii < logs.length; ii++){
+                    var log = logs[ii];
+                    this.createReportRow(log, divBody);
+                }
+                divBody.className = 'report_chatlog'
+                divReport.appendChild(divHeader);
+                divReport.appendChild(divBody);
+                containterLogs.appendChild(divReport);
+                this.setReportEvents(divHeader, divBody);
+            }
         }
         
     };
     
+    this.setReportEvents = function(divHeader, divBody){
+        Wrapper.addEvent(divHeader, 'click', function(){
+            if(divBody.style.display === 'block'){
+                divBody.style.display = 'none';
+            } else {
+                divBody.style.display = 'block';
+            }
+        });
+    };
+    
     this.addSocketEvents = function(socket){
         
-        socket.on('display_reports', function(reports) {
-            ChatModerator.displayReports(reports);
-        });
+        var that = this;
         
         socket.on('force_reload', function() {
             location.reload();
@@ -69,6 +108,10 @@ var ChatModerator = new function() {
         socket.on('kick_callback', function() {
             socket.disconnect();
             Chat.addErrorMessageRow(chatTranslations.kicked);
+        });
+        
+        socket.on('display_reports', function(reports) {
+            that.displayReports(reports);
         });
         
     };

@@ -20,3 +20,7 @@ contextmenu_ban: ban user
 kicked: you are kicked
 muted: you are muted
 was_kicked: %s was kicked
+report_subject_label: Please insert a reason
+report_send_button: send report
+report_cancel_button: cancel
+reported_chatlogs: reported chatlogs

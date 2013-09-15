@@ -230,8 +230,11 @@ try {
             }
         });
 
-        socket.on('report_posts', function(){
+        socket.on('report_posts', function(subject){
             if(roomChatlogs[socket.room] && roomChatlogs[socket.room].length > 0){
+                if(!subject || typeof subject === 'undefined'){
+                    var subject = '';
+                }
                 var sql = 'INSERT INTO nodejs_chat_reports SET ?';
                 var messageData = JSON.stringify(roomChatlogs[socket.room]);
                 var ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address;
@@ -243,12 +246,25 @@ try {
                         ('00' + date.getUTCHours()).slice(-2) + ':' + 
                         ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
                         ('00' + date.getUTCSeconds()).slice(-2);
-                var data = {'ip': ip, 'username': socket.username, 'date': date, 'chatlog': messageData};
+                var data = {'ip': ip, 'username': socket.username, 'date': date, 'chatlog': messageData, 'subject': subject};
                 console.log(data);
                 connection.query(sql, data, function(err, result) {
                     if (err) throw err;
                     socket.emit('report_success');
                     io.sockets.in(socket.room).emit('updatechatlog', socket.username, 'report_success');
+                });
+            }
+        });
+
+        // kick given user if you have the access
+        socket.on('get_reports', function(){
+            if(socket.mod === 1){
+                var sql = 'SELECT * FROM nodejs_chat_reports ORDER BY `date` DESC';
+                connection.query(sql, function(err, rows, fields) {
+                    if (err) throw err;
+                    if(rows && rows.length > 0){
+                        socket.emit('display_reports', rows);
+                    }
                 });
             }
         });

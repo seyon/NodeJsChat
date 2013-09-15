@@ -70,7 +70,10 @@ class StyleController extends Controller
             'contextmenu_ban',
             'kicked',
             'muted',
-            'was_kicked'
+            'was_kicked',
+            'report_subject_label',
+            'report_send_button',
+            'report_cancel_button'
         );
         
         $translationArray = array();

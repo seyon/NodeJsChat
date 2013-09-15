@@ -78,5 +78,33 @@ var ChatUtil = new function() {
         var breakTag = '<br ' + '/>'; // Adjust comment to avoid issue on phpjs.org display
 
         return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-    }
+    };
+    
+    this.createTimeString = function(date){
+        var h = date.getHours();
+        if(h.toString().length <= 1){
+            h = '0'+h;
+        }
+        var m = date.getMinutes();
+        if(m.toString().length <= 1){
+            m = '0'+m.toString();
+        }
+        return h+':'+m;
+    };
+    
+    this.createDateString = function(date){
+        var d = date.getDay();
+        if(d.toString().length <= 1){
+            d = '0'+d;
+        }
+        var m = date.getMonth();
+        if(m.toString().length <= 1){
+            m = '0'+m.toString();
+        }
+        var y = date.getYear();
+        if (y < 999){
+          y += 1900;
+        }
+        return d+'.'+m+'.'+y;
+    };
 };

@@ -29,6 +29,11 @@ class Report {
     protected $username;
 
     /**
+     * @ORM\Column(type="string", nullable=false)
+     */
+    protected $subject;
+
+    /**
      * @ORM\Column(type="text", nullable=false)
      */
     protected $chatlog;

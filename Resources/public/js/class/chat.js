@@ -366,17 +366,9 @@ var Chat = new function() {
         div.className = 'message';
         
         var date = new Date(time);
-        var h = date.getHours();
-        if(h.toString().length <= 1){
-            h = '0'+h;
-        }
-        var m = date.getMinutes();
-        if(m.toString().length <= 1){
-            m = '0'+m.toString();
-        }
         var timeDiv = document.createElement('div');
         timeDiv.className = 'time';
-        timeDiv.innerHTML = h+':'+m+' | ';
+        timeDiv.innerHTML = ChatUtil.createTimeString(date)+' | ';
         
         var userDiv = document.createElement('div');
         userDiv.className = 'user '+additionalUserClassName;
@@ -450,9 +442,54 @@ var Chat = new function() {
         });
         
         Wrapper.addEvent('report_posts', 'click', function(e) {
-            if(confirm(chatTranslations.report_question)){
-                that.socket.emit('report_posts');
+            
+            if(document.getElementById('chatbox_dialog')){
+                document.getElementById('chatbox_dialog').remove();
             }
+            
+            var dialog = document.createElement('div');
+            dialog.id = 'chatbox_dialog';
+            
+            var message = document.createElement('div');
+            message.className = 'message';
+            message.innerHTML = chatTranslations.report_question;
+            
+            
+            var label = document.createElement('label');
+            label.innerHTML = chatTranslations.report_subject_label;
+            var input = document.createElement('input');
+            var button = document.createElement('button');
+            button.innerHTML = chatTranslations.report_send_button;
+            var button2 = document.createElement('button');
+            button2.innerHTML = chatTranslations.report_cancel_button;
+            
+            dialog.appendChild(message);
+            dialog.appendChild(label);
+            dialog.appendChild(input);
+            dialog.appendChild(button);
+            dialog.appendChild(button2);
+            
+            document.body.appendChild(dialog);
+            
+            Wrapper.addEvent(button, 'click', function(e){
+                that.socket.emit('report_posts', input.value);
+                if(document.getElementById('chatbox_dialog')){
+                    document.getElementById('chatbox_dialog').remove();
+                }
+                if(e){
+                    e.preventDefault();
+                }
+            });
+            
+            Wrapper.addEvent(button2, 'click', function(e){
+                if(document.getElementById('chatbox_dialog')){
+                    document.getElementById('chatbox_dialog').remove();
+                }
+                if(e){
+                    e.preventDefault();
+                }
+            });
+            
             if(e){
                 e.preventDefault();
             }

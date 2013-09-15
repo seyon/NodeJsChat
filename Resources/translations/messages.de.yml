@@ -20,3 +20,7 @@ contextmenu_ban: banne den User
 kicked: Du wurdest gekicket!
 muted: Du bist stum geschalten!
 was_kicked: %s wurde gekicked
+report_subject_label: Bitte gib einen Grund ein.
+report_send_button: Meldung abschicken
+report_cancel_button: abbrechen
+reported_chatlogs: Gemeldete Chatlogs
